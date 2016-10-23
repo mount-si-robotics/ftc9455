@@ -76,17 +76,17 @@ public class YesOpMode_Iterative extends OpMode
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
          */
-        LFMotor  = hardwareMap.dcMotor.get("left_Frontdrive");
-        RFMotor = hardwareMap.dcMotor.get("right_Frontdrive");
-        LBMotor  = hardwareMap.dcMotor.get("left_Backdrive");
-        RBMotor = hardwareMap.dcMotor.get("right_Backdrive");
+        LFMotor  = hardwareMap.dcMotor.get("LFMotor");
+        RFMotor = hardwareMap.dcMotor.get("RFMotor");
+        LBMotor  = hardwareMap.dcMotor.get("LBMotor");
+        RBMotor = hardwareMap.dcMotor.get("RBMotor");
 
         // eg: Set the drive motor directions:
         // Reverse the motor that runs backwards when connected directly to the battery
-        LFMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        RFMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        LBMotor.setDirection(DcMotor.Direction.FORWARD);
-        RBMotor.setDirection(DcMotor.Direction.REVERSE);
+//        LFMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+//        RFMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+//        LBMotor.setDirection(DcMotor.Direction.FORWARD);
+//        RBMotor.setDirection(DcMotor.Direction.REVERSE);
         // telemetry.addData("Status", "Initialized");
     }
 
