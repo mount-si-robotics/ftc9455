@@ -67,9 +67,9 @@ public class Mecanum_Drive extends LinearOpMode {
     DcMotor RFMotor = null;
 
 
-    float X1 = 0.0f;
-    float X2 = 0.0f;
-    float Y1 = 0.0f;
+    float leftStickX = 0.0f;
+    float rightStickX = 0.0f;
+    float leftStickY = 0.0f;
 
     float deadzone = 0.1f;
 
@@ -109,28 +109,34 @@ public class Mecanum_Drive extends LinearOpMode {
                 telemetry.update();
 
                 if (abs(gamepad1.left_stick_x) > deadzone) {
-                    X1 = gamepad1.left_stick_x;
+
+                    leftStickX = gamepad1.left_stick_x;
                 } else {
-                    X1 = 0;
+                    leftStickX = 0;
                 }
 
                 if (abs(gamepad1.left_stick_y) > deadzone) {
-                    Y1 = gamepad1.left_stick_y;
+                    leftStickY = gamepad1.left_stick_y;
                 } else {
-                    Y1 = 0;
+                    leftStickY = 0;
                 }
 
                 if (abs(gamepad1.right_stick_x) > deadzone) {
-                    X2 = gamepad1.right_stick_x;
+                    rightStickX = gamepad1.right_stick_x;
                 } else {
-                    X2 = 0;
+                    rightStickX = 0;
                 }
 
-                RFMotor.setPower(Y1 - X2 - X1);
-                RBMotor.setPower(Y1 - X2 + X1);
-                LFMotor.setPower(Y1 + X2 + X1);
-                LBMotor.setPower(Y1 + X2 - X1);
-
+                RFMotor.setPower(leftStickY - rightStickX - leftStickX);
+                RBMotor.setPower(leftStickY - rightStickX + leftStickX);
+                LFMotor.setPower(leftStickY + rightStickX + leftStickX);
+                LBMotor.setPower(leftStickY + rightStickX - leftStickX);
+/*
+.5 - .5
+.5 - .5
+.5 + .5
+.5 + .5
+ */
             }
         }
     }
