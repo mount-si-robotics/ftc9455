@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
  * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
@@ -52,7 +53,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Mecanum_Drive_Auto", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@Autonomous(name="CAP-BALL-AUTO", group="Linear Opmode")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class Mecanum_Drive_Auto extends LinearOpMode {
 
@@ -60,7 +61,7 @@ public class Mecanum_Drive_Auto extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = -2.0;     // This is < 1.0 if geared UP
+    static final double DRIVE_GEAR_REDUCTION = -1.0;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -72,6 +73,11 @@ public class Mecanum_Drive_Auto extends LinearOpMode {
     DcMotor RBMotor = null;
     DcMotor LFMotor = null;
     DcMotor RFMotor = null;
+
+    float LFPower = 0.0f;
+    float RFPower = 0.0f;
+    float LBPower = 0.0f;
+    float RBPower = 0.0f;
 
     @Override
     public void runOpMode() {
@@ -90,8 +96,8 @@ public class Mecanum_Drive_Auto extends LinearOpMode {
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
-        LFMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        RFMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        LFMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        RFMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         LBMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         RBMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -124,17 +130,19 @@ public class Mecanum_Drive_Auto extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
 
-            encoderDrive(DRIVE_SPEED, 55, 55, 5.0, 55, 55);  // S1: Forward 48 Inches with 5 Sec timeout
-            sleep(1000);
 
-            telemetry.addData("Path", "Complete");
+            sleep(10000); //ten second delay to avoid illegaly crossing the line
+            encoderDrive(DRIVE_SPEED, 55, 55, 55, 55, 5.0);  // S1: Forward 55 Inches with 5 Sec timeout
+
+            telemetry.addData("Path", "Complete"); //info for the drivers
             telemetry.update();
         }
 
 
+        //This is the fun stuff that defines encoderDrive, lifted from the sample code with some extras for the mecanum drive
             public void encoderDrive(double speed,
             double leftFInches, double rightFInches,
-            double timeoutS, double leftBInches, double rightBInches) {
+            double leftBInches, double rightBInches, double timeoutS) {
 
             int newLeftFrontTarget;
             int newRightFrontTarget;
