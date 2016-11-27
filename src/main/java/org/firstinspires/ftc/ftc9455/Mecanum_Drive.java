@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
+import com.qualcomm.robotcore.util.Range;
 
 import static java.lang.Math.abs;
 
@@ -55,7 +55,7 @@ import static java.lang.Math.abs;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Mecanum_Drive", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@TeleOp(name="TELE-OP", group="Linear Opmode")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class Mecanum_Drive extends LinearOpMode {
 
@@ -65,11 +65,20 @@ public class Mecanum_Drive extends LinearOpMode {
     DcMotor RBMotor = null;
     DcMotor LFMotor = null;
     DcMotor RFMotor = null;
+    //DcMotor Launcher = null;
 
 
     float X1 = 0.0f;
     float X2 = 0.0f;
     float Y1 = 0.0f;
+ /*   float leftx;
+    float lefty;
+    float rightx;*/
+
+    float LFPower = 0.0f;
+    float RFPower = 0.0f;
+    float LBPower = 0.0f;
+    float RBPower = 0.0f;
 
     float deadzone = 0.1f;
 
@@ -86,13 +95,18 @@ public class Mecanum_Drive extends LinearOpMode {
         RBMotor = hardwareMap.dcMotor.get("RBMotor");
         LFMotor = hardwareMap.dcMotor.get("LFMotor");
         RFMotor = hardwareMap.dcMotor.get("RFMotor");
+        //Launcher = hardwareMap.dcMotor.get("Launcher");
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
+        // Motors on left have to be going in same direction
+        // Motors on right have to be going in opposite direction
+        // If controls are reversed (drives backwards instead of forwards,
+        // switch FORWARD and REVERSE on left and right sides below.0
         LFMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         RFMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         LBMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        RBMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        RBMotor.setDirection(DcMotorSimple.Direction.FORWARD );
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -103,10 +117,33 @@ public class Mecanum_Drive extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
 
+
+            //code for the launcher, which is yet to be attached
+            // if(gamepad1.x)
+            //launcher.setpower(100);
+            //else
+            // launcher.setpower(0);
+
+
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
             while (opModeIsActive()) {
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.update();
+/*
+
+                leftx = gamepad1.left_stick_x;
+                lefty = gamepad1.left_stick_y;
+                rightx = gamepad1.right_stick_x;
+
+                leftx = Range.clip(leftx, -1, 1);
+                lefty = Range.clip(lefty, -1, 1);
+                rightx = Range.clip(rightx, -1, 1);
+
+                leftx = (float) scaleInput(leftx);
+                lefty = (float) scaleInput(lefty);
+                rightx = (float) scaleInput(rightx);
+*/
+
 
                 if (abs(gamepad1.left_stick_x) > deadzone) {
                     X1 = gamepad1.left_stick_x;
@@ -126,12 +163,58 @@ public class Mecanum_Drive extends LinearOpMode {
                     X2 = 0;
                 }
 
-                RFMotor.setPower(Y1 - X2 - X1);
-                RBMotor.setPower(Y1 - X2 + X1);
-                LFMotor.setPower(Y1 + X2 + X1);
-                LBMotor.setPower(Y1 + X2 - X1);
+                // Original semi working code, which is what we are using... yeah
+                RFMotor.setPower(-Y1 - X2 + X1);
+                RBMotor.setPower(Y1 - X2 - X1);
+                LFMotor.setPower(-Y1 + X2 - X1);
+               LBMotor.setPower(Y1 + X2 + X1);
 
+            /*    // Should be working code
+                // If this still isn't working, change the direction of each of the left and
+                // right motors up above and retest.
+                RFPower = Y1 - X2 - X1;
+                RBPower = Y1 - X2 + X1;
+                LFPower = Y1 + X2 + X1;
+                LBPower = Y1 + X2 - X1;
+                RFMotor.setPower(RFPower);
+                RBMotor.setPower(RBPower);
+                LFMotor.setPower(LFPower);
+                LBMotor.setPower(LBPower);*/
             }
         }
     }
 }
+/*
+
+
+            double scaleInput(double dVal)  {
+                double[] scaleArray = { 0.0, 0.01, 0.04, 0.06, 0.10, 0.15, 0.18, 0.24,
+                        0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
+
+                // get the corresponding index for the scaleInput array.
+                int index = (int) (dVal * 16.0);
+
+                // index should be positive.
+                if (index < 0) {
+                    index = -index;
+                }
+
+                // index cannot exceed size of array minus 1.
+                if (index > 16) {
+                    index = 16;
+                }
+
+                // get value from the array.
+                double dScale = 0.0;
+                if (dVal < 0) {
+                    dScale = -scaleArray[index];
+                } else {
+                    dScale = scaleArray[index];
+                }
+
+                // return scaled value.
+                return dScale;
+            }
+}
+*/
+
