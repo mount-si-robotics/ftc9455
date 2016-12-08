@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.pow;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -65,20 +66,20 @@ public class Mecanum_Drive extends LinearOpMode {
     DcMotor RBMotor = null;
     DcMotor LFMotor = null;
     DcMotor RFMotor = null;
-    //DcMotor Launcher = null;
+    DcMotor Launcher = null;
 
 
-    float X1 = 0.0f;
-    float X2 = 0.0f;
-    float Y1 = 0.0f;
- /*   float leftx;
-    float lefty;
-    float rightx;*/
+    double X1 = 0.0f;
+    double X2 = 0.0f;
+    double Y1 = 0.0f;
+    double leftx;
+    double lefty;
+    double rightx;
 
-    float LFPower = 0.0f;
-    float RFPower = 0.0f;
-    float LBPower = 0.0f;
-    float RBPower = 0.0f;
+    double LFPower = 0.0f;
+    double RFPower = 0.0f;
+    double LBPower = 0.0f;
+    double RBPower = 0.0f;
 
     float deadzone = 0.1f;
 
@@ -95,7 +96,7 @@ public class Mecanum_Drive extends LinearOpMode {
         RBMotor = hardwareMap.dcMotor.get("RBMotor");
         LFMotor = hardwareMap.dcMotor.get("LFMotor");
         RFMotor = hardwareMap.dcMotor.get("RFMotor");
-        //Launcher = hardwareMap.dcMotor.get("Launcher");
+        Launcher = hardwareMap.dcMotor.get("Launcher");
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
@@ -107,6 +108,8 @@ public class Mecanum_Drive extends LinearOpMode {
         RFMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         LBMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         RBMotor.setDirection(DcMotorSimple.Direction.FORWARD );
+        gamepad1.setJoystickDeadzone(deadzone);
+        gamepad2.setJoystickDeadzone(deadzone);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -125,16 +128,18 @@ public class Mecanum_Drive extends LinearOpMode {
             // launcher.setpower(0);
 
 
+
+
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
             while (opModeIsActive()) {
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.update();
-/*
+
 
                 leftx = gamepad1.left_stick_x;
                 lefty = gamepad1.left_stick_y;
                 rightx = gamepad1.right_stick_x;
-
+/*
                 leftx = Range.clip(leftx, -1, 1);
                 lefty = Range.clip(lefty, -1, 1);
                 rightx = Range.clip(rightx, -1, 1);
@@ -144,42 +149,67 @@ public class Mecanum_Drive extends LinearOpMode {
                 rightx = (float) scaleInput(rightx);
 */
 
-
-                if (abs(gamepad1.left_stick_x) > deadzone) {
-                    X1 = gamepad1.left_stick_x;
-                } else {
-                    X1 = 0;
+                // Scale the input values by squaring them
+                int joysign = 1;
+                if (leftx < 0) {
+                    joysign = -1;
                 }
+                leftx = joysign * (pow(abs(leftx), 2.0));
 
-                if (abs(gamepad1.left_stick_y) > deadzone) {
-                    Y1 = gamepad1.left_stick_y;
-                } else {
-                    Y1 = 0;
+                joysign = 1;
+                if (lefty < 0) {
+                    joysign = -1;
                 }
+                lefty = joysign * (pow(abs(lefty), 2.0));
 
-                if (abs(gamepad1.right_stick_x) > deadzone) {
-                    X2 = gamepad1.right_stick_x;
-                } else {
-                    X2 = 0;
+                joysign = 1;
+                if (rightx < 0.0) {
+                    joysign = -1;
                 }
+                rightx = joysign * (pow(abs(rightx), 2.0));
 
-                // Original semi working code, which is what we are using... yeah
-                RFMotor.setPower(-Y1 - X2 + X1);
-                RBMotor.setPower(Y1 - X2 - X1);
-                LFMotor.setPower(-Y1 + X2 - X1);
-               LBMotor.setPower(Y1 + X2 + X1);
 
-            /*    // Should be working code
+//                if (abs(gamepad1.left_stick_x) > deadzone) {
+//                    X1 = gamepad1.left_stick_x;
+//                } else {
+//                    X1 = 0;
+//                }
+//
+//                if (abs(gamepad1.left_stick_y) > deadzone) {
+//                    Y1 = gamepad1.left_stick_y;
+//                } else {
+//                    Y1 = 0;
+//                }
+//
+//                if (abs(gamepad1.right_stick_x) > deadzone) {
+//                    X2 = gamepad1.right_stick_x;
+//                } else {
+//                    X2 = 0;
+//                }
+
+                // Original semi working code, which is what we are using for the first competition... yeah
+                // the two front motors were swaped in the wiring.
+//                RFMotor.setPower(-Y1 - X2 + X1);
+//                RBMotor.setPower(Y1 - X2 - X1);
+//                LFMotor.setPower(-Y1 + X2 - X1);
+//                LBMotor.setPower(Y1 + X2 + X1);
+
+                X1 = leftx;
+                Y1 = lefty;
+                X2 = rightx;
+
+               // Should be working code
                 // If this still isn't working, change the direction of each of the left and
                 // right motors up above and retest.
-                RFPower = Y1 - X2 - X1;
-                RBPower = Y1 - X2 + X1;
-                LFPower = Y1 + X2 + X1;
-                LBPower = Y1 + X2 - X1;
+                RFPower = Y1 + X2 + X1;
+                RBPower = Y1 + X2 - X1;
+                LFPower = Y1 - X2 - X1;
+                LBPower = Y1 - X2 + X1;
                 RFMotor.setPower(RFPower);
                 RBMotor.setPower(RBPower);
                 LFMotor.setPower(LFPower);
-                LBMotor.setPower(LBPower);*/
+                LBMotor.setPower(LBPower);
+                Launcher.setPower(gamepad2.left_stick_y);
             }
         }
     }

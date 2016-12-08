@@ -53,11 +53,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="CAP-BALL-AUTO", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@Autonomous(name="CAP-BALL-AUTO", group="Linear Opmode")
 //@Disabled
 public class Mecanum_Drive_Auto extends LinearOpMode {
 
-    /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
@@ -110,7 +109,7 @@ public class Mecanum_Drive_Auto extends LinearOpMode {
         LFMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RFMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LBMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RBMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+RBMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0", "Starting at %7d :%7d",
